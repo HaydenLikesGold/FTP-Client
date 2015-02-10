@@ -10,4 +10,4 @@ within the code. To adjust this simply look for places where the server is liste
 this would include the login information.
 
 ## Credit
-I worked individually on this project for a lab in my networking course
+I worked individually on this project for a lab in my networking course.
