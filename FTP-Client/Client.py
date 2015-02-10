@@ -1,28 +1,5 @@
 from socket import *
-
-#General Helpers
-def response_to_port_tuple(response):
-	hostAddress = response[response.find('(')+1:]
-	hostAddress = hostAddress.replace(')', '')
-	arrayOfInfo = hostAddress.split(',')
-
-	hostName = arrayOfInfo[0]+'.'+arrayOfInfo[1]+'.'+arrayOfInfo[2]+'.'+arrayOfInfo[3]
-	portNumber = ((int(arrayOfInfo[4]))*256) + int(arrayOfInfo[5])
-
-	return (hostName, portNumber)
-
-def get_response():
-	while True:
-		line = _socketFile.readline()
-		if (line[0].isdigit() and line[1].isdigit and line[2].isdigit and line[3] == " "):
-			return line
-
-def get_retr_response():
-	string_buffer = ''
-	while True:
-		new_line = _createdFile.readline()
-		if not new_line: return string_buffer
-		string_buffer += new_line
+import response
 
 #Error Helpers
 def raise_errors_for_values(response, list_of_values):
@@ -55,14 +32,14 @@ def user_login_process():
 def user_entry():
 	_socketFile.write("USER anonymous\r\n")
 	_socketFile.flush()
-	response = get_response()
-	validate_user_and_pass_response(response)
-	return int(response[0:1])
+	response_x = response.get_response(_socketFile)
+	validate_user_and_pass_response(response_x)
+	return int(response_x[0:1])
 
 def password_entry():
 	_socketFile.write('PASS anonymous@gustavus.edu\r\n')
 	_socketFile.flush()
-	pass_response = get_response()
+	pass_response = response.get_response(_socketFile)
 	validate_user_and_pass_response(pass_response)
 	return int(pass_response[0:1])
 
@@ -74,7 +51,7 @@ def validate_user_and_pass_response(response):
 def acct_entry():
 	_socketFile.write('ACCT anonymous\r\n')
 	_socketFile.flush()
-	acct_response = get_response()
+	acct_response = response.get_response(_socketFile)
 	validate_acct_response(acct_response)
 
 def validate_acct_response(response):
@@ -88,7 +65,7 @@ def connect_to_princeton_server():
 	serverPort = 21
 	_clientSocket.connect((serverName, serverPort))
 	_clientSocket.close()
-	get_response()
+	response.get_response(_socketFile)
 
 def connect_to_new_socket():
 	pasv_port = send_pasv_command()
@@ -98,9 +75,9 @@ def connect_to_new_socket():
 def send_pasv_command():
 	_socketFile.write('PASV\r\n')
 	_socketFile.flush()
-	newPortInformation = get_response()
+	newPortInformation = response.get_response(_socketFile)
 	validate_pasv_and_quit_command(newPortInformation)
-	return response_to_port_tuple(newPortInformation)
+	return response.response_to_port_tuple(newPortInformation)
 
 def validate_pasv_and_quit_command(response):
 	raise_errors_for_values(response, [1,3])
@@ -110,8 +87,8 @@ def validate_pasv_and_quit_command(response):
 def send_retr_command():
 	_socketFile.write('RETR /pub/cs126/nbody/3body.txt\r\n')
 	_socketFile.flush()
-	validate_retr_command(get_response())
-	validate_retr_command(get_response())
+	validate_retr_command(response.get_response(_socketFile))
+	validate_retr_command(response.get_response(_socketFile))
 
 def validate_retr_command(response):
 	raise_errors_for_values(response, [3])
@@ -120,12 +97,12 @@ def validate_retr_command(response):
 
 def retrieve_data():
 	send_retr_command()
-	return get_retr_response()
+	return response.get_retr_response(_createdFile)
 
 def close_server_connection():
 	_socketFile.write('QUIT\r\n')
 	_socketFile.flush()
-	validate_pasv_and_quit_command(get_response())
+	validate_pasv_and_quit_command(response.get_response(_socketFile))
 
 def get_server_response_less_basic():
 	global _clientSocket
