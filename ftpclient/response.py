@@ -6,7 +6,10 @@ def response_to_port_tuple(response):
     host_address = host_address.replace(')', '')
     info_array = host_address.split(',')
 
-    host_name = info_array[0]+'.'+info_array[1]+'.'+info_array[2]+'.'+info_array[3]
+    host_name = info_array[0]+'.'+\
+                info_array[1]+'.'+\
+                info_array[2]+'.'+\
+                info_array[3]
     port_number = ((int(info_array[4]))*256) + int(info_array[5])
 
     return (host_name, port_number)
