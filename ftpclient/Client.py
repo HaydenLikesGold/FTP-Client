@@ -2,50 +2,7 @@ from socket import *
 
 import ftp_response_handler
 import response
-
-# Login Process
-def user_login_process():
-    user_response_code = user_entry()
-    if (user_response_code == 3):
-        pass_response_code = password_entry()
-        if (pass_response_code == 3):
-            acct_entry()
-
-
-def user_entry():
-    _socketFile.write("USER anonymous\r\n")
-    _socketFile.flush()
-    response_x = response.get_response(_socketFile)
-    validate_user_and_pass_response(response_x)
-    return int(response_x[0:1])
-
-
-def password_entry():
-    _socketFile.write('PASS anonymous@gustavus.edu\r\n')
-    _socketFile.flush()
-    pass_response = response.get_response(_socketFile)
-    validate_user_and_pass_response(pass_response)
-    return int(pass_response[0:1])
-
-
-def validate_user_and_pass_response(response):
-    ftp_response_handler.raise_ftp_error_for_values(response, [1])
-    ftp_response_handler.raise_ftp_failure_for_values(response, [4, 5])
-    ftp_response_handler.raise_error_if_not_in_given_values(response, [2, 3])
-
-
-def acct_entry():
-    _socketFile.write('ACCT anonymous\r\n')
-    _socketFile.flush()
-    acct_response = response.get_response(_socketFile)
-    validate_acct_response(acct_response)
-
-
-def validate_acct_response(response):
-    ftp_response_handler.raise_ftp_error_for_values(response, [1, 3])
-    ftp_response_handler.raise_ftp_failure_for_values(response, [4, 5])
-    ftp_response_handler.raise_error_if_not_in_given_values(response, [2])
-
+import login
 
 # Connection Process
 def connect_to_princeton_server():
@@ -112,7 +69,7 @@ def get_server_response_less_basic():
     _createdFile = _createdSocket.makefile(mode="rw")
 
     connect_to_princeton_server()
-    user_login_process()
+    login.user_login_process(_socketFile)
     connect_to_new_socket()
     data = retrieve_data()
 
