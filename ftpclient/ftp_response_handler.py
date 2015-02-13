@@ -23,3 +23,15 @@ def raise_error_if_not_in_given_values(response, list_of_values):
         if response_value == return_code:
             return
     raise RuntimeError("Unexpected FTP response: " + response)
+
+
+def validate_pasv_and_quit_command(response):
+    raise_ftp_error_for_values(response, [1, 3])
+    raise_ftp_failure_for_values(response, [4, 5])
+    raise_error_if_not_in_given_values(response, [2])
+
+
+def validate_retr_command(response):
+    raise_ftp_error_for_values(response, [3])
+    raise_ftp_failure_for_values(response, [4, 5])
+    raise_error_if_not_in_given_values(response, [1, 2])
