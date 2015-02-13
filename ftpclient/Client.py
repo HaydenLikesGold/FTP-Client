@@ -5,22 +5,17 @@ import lifecycle
 
 
 def get_server_response_less_basic():
-    global _clientSocket
-    global _createdSocket
-    global _socketFile
-    global _createdFile
+    clientSocket = socket(SOCK_DGRAM)
+    createdSocket = socket(SOCK_DGRAM)
+    socketFile = clientSocket.makefile(mode="rw")
+    createdFile = createdSocket.makefile(mode="rw")
 
-    _clientSocket = socket(SOCK_DGRAM)
-    _createdSocket = socket(SOCK_DGRAM)
-    _socketFile = _clientSocket.makefile(mode="rw")
-    _createdFile = _createdSocket.makefile(mode="rw")
+    lifecycle.connect_to_princeton_server(socketFile, clientSocket)
+    login.user_login_process(socketFile)
+    lifecycle.connect_to_new_socket(createdSocket, socketFile)
+    data = lifecycle.retrieve_data(socketFile, createdFile)
 
-    lifecycle.connect_to_princeton_server(_socketFile, _clientSocket)
-    login.user_login_process(_socketFile)
-    lifecycle.connect_to_new_socket(_createdSocket, _socketFile)
-    data = lifecycle.retrieve_data(_socketFile, _createdFile)
-
-    lifecycle.close_server_connection(_socketFile)
+    lifecycle.close_server_connection(socketFile)
     return data
 
 
