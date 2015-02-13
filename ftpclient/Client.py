@@ -1,14 +1,13 @@
 from socket import *
 
-import login
 from lifecycle import Lifecycle
 
 
 class FileTransfer:
-    def __init__(self, server, port, file_path):
+    def __init__(self, server, port, file_destination):
         self.server = server
         self.port = port
-        self.file_path = file_path
+        self.file_path = file_destination
 
     def ftp_process(self):
         client_socket = socket(SOCK_DGRAM)
@@ -18,12 +17,11 @@ class FileTransfer:
 
         lifecycle = Lifecycle(self.server, self.port, self.file_path,
                               socket_file, created_file)
-        lifecycle.connect_to_server(client_socket)
-        login.user_login_process(socket_file)
+        lifecycle.connect_and_login_to_server(client_socket)
         lifecycle.connect_to_new_socket(created_socket)
         response = lifecycle.retrieve_data()
-
         lifecycle.close_server_connection()
+
         print response
         return response
 

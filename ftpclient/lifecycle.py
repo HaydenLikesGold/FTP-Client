@@ -1,3 +1,4 @@
+import login
 import ftp_response_handler
 import response
 
@@ -14,10 +15,11 @@ class Lifecycle:
         self.socket_file = socket_file
         self.client_file = client_file
 
-    def connect_to_server(self, client_socket):
+    def connect_and_login_to_server(self, client_socket):
         client_socket.connect((self.server_name, self.server_port))
         client_socket.close()
         response.get_response(self.socket_file)
+        login.user_login_process(self.socket_file)
 
     def connect_to_new_socket(self, socket):
         pasv_port = self.send_pasv_command()
@@ -44,3 +46,4 @@ class Lifecycle:
     def close_server_connection(self):
         ftp_response_handler.validate_pasv_and_quit_command(
             response.get_response(self.socket_file, QUIT_COMMAND))
+
