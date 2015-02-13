@@ -24,12 +24,3 @@ class FileTransfer:
 
         print response
         return response
-
-
-
-server_name = 'ftp.cs.princeton.edu'
-server_port = 21
-file_path = '/pub/cs126/nbody/3body.txt'
-
-x = FileTransfer(server_name, server_port, file_path)
-x.ftp_process()
