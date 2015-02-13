@@ -3,42 +3,44 @@ import response
 
 
 PASV_COMMAND = 'PASV\r\n'
-RETR_COMMAND = 'RETR /pub/cs126/nbody/3body.txt\r\n'
 QUIT_COMMAND = 'QUIT\r\n'
 
 
-def connect_to_princeton_server(socket_file, client_socket):
-    server_name = 'ftp.cs.princeton.edu'
-    server_port = 21
-    client_socket.connect((server_name, server_port))
-    client_socket.close()
-    response.get_response(socket_file)
+class Lifecycle:
+    def __init__(self, server, port, file_path, socket_file, client_file):
+        self.server_name = server
+        self.server_port = port
+        self.retr_command = 'RETR ' + file_path + '\r\n'
+        self.socket_file = socket_file
+        self.client_file = client_file
 
+    def connect_to_server(self, client_socket):
+        client_socket.connect((self.server_name, self.server_port))
+        client_socket.close()
+        response.get_response(self.socket_file)
 
-def connect_to_new_socket(socket, socket_file):
-    pasv_port = send_pasv_command(socket_file)
-    socket.connect(pasv_port)
-    socket.close()
+    def connect_to_new_socket(self, socket):
+        pasv_port = self.send_pasv_command()
+        socket.connect(pasv_port)
+        socket.close()
 
+    def send_pasv_command(self):
+        new_port_information = response.get_response(self.socket_file,
+                                                     PASV_COMMAND)
+        ftp_response_handler.validate_pasv_and_quit_command(
+            new_port_information)
+        return response.response_to_port_tuple(new_port_information)
 
-def send_pasv_command(socket_file):
-    new_port_information = response.get_response(socket_file, PASV_COMMAND)
-    ftp_response_handler.validate_pasv_and_quit_command(new_port_information)
-    return response.response_to_port_tuple(new_port_information)
+    def send_retr_command(self):
+        ftp_response_handler.validate_retr_command(
+            response.get_response(self.socket_file, self.retr_command))
+        ftp_response_handler.validate_retr_command(
+            response.get_response(self.socket_file))
 
+    def retrieve_data(self):
+        self.send_retr_command()
+        return response.get_retr_response(self.client_file)
 
-def send_retr_command(socket_file):
-    ftp_response_handler.validate_retr_command(
-        response.get_response(socket_file, RETR_COMMAND))
-    ftp_response_handler.validate_retr_command(
-        response.get_response(socket_file))
-
-
-def retrieve_data(socket_file, created_file):
-    send_retr_command(socket_file)
-    return response.get_retr_response(created_file)
-
-
-def close_server_connection(socket_file):
-    ftp_response_handler.validate_pasv_and_quit_command(
-        response.get_response(socket_file, QUIT_COMMAND))
+    def close_server_connection(self):
+        ftp_response_handler.validate_pasv_and_quit_command(
+            response.get_response(self.socket_file, QUIT_COMMAND))

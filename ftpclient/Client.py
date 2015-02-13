@@ -1,22 +1,37 @@
 from socket import *
 
 import login
-import lifecycle
+from lifecycle import Lifecycle
 
 
-def ftp_process():
-    client_socket = socket(SOCK_DGRAM)
-    created_socket = socket(SOCK_DGRAM)
-    socket_file = client_socket.makefile(mode="rw")
-    created_file = created_socket.makefile(mode="rw")
+class FileTransfer:
+    def __init__(self, server, port, file_path):
+        self.server = server
+        self.port = port
+        self.file_path = file_path
 
-    lifecycle.connect_to_princeton_server(socket_file, client_socket)
-    login.user_login_process(socket_file)
-    lifecycle.connect_to_new_socket(created_socket, socket_file)
-    response = lifecycle.retrieve_data(socket_file, created_file)
+    def ftp_process(self):
+        client_socket = socket(SOCK_DGRAM)
+        created_socket = socket(SOCK_DGRAM)
+        socket_file = client_socket.makefile(mode="rw")
+        created_file = created_socket.makefile(mode="rw")
 
-    lifecycle.close_server_connection(socket_file)
-    return response
+        lifecycle = Lifecycle(self.server, self.port, self.file_path,
+                              socket_file, created_file)
+        lifecycle.connect_to_server(client_socket)
+        login.user_login_process(socket_file)
+        lifecycle.connect_to_new_socket(created_socket)
+        response = lifecycle.retrieve_data()
+
+        lifecycle.close_server_connection()
+        print response
+        return response
 
 
-print(ftp_process())
+
+server_name = 'ftp.cs.princeton.edu'
+server_port = 21
+file_path = '/pub/cs126/nbody/3body.txt'
+
+x = FileTransfer(server_name, server_port, file_path)
+x.ftp_process()
