@@ -1,8 +1,4 @@
-"""Class that manages the response coming from a FTP server"""
-
-
 def response_to_port_tuple(response):
-    """Takes a response and generates a port_tuple"""
     host_address = response[response.find('(') + 1:]
     host_address = host_address.replace(')', '')
     info_array = host_address.split(',')
@@ -20,7 +16,6 @@ def get_response(socket_file, command=None):
     if command:
         socket_file.write(command)
         socket_file.flush()
-    """Will wait and recieve a response"""
     while True:
         line = socket_file.readline()
         if line[0].isdigit() and line[1].isdigit and line[2].isdigit and line[
@@ -29,7 +24,6 @@ def get_response(socket_file, command=None):
 
 
 def get_retr_response(created_file):
-    """Gets extended response"""
     string_buffer = ''
     while True:
         new_line = created_file.readline()

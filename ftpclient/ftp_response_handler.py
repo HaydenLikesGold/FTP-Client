@@ -1,8 +1,4 @@
-"""Manages errors from a given response and a list of values"""
-
-
 def raise_ftp_error_for_values(response, list_of_values):
-    """ftp errors passed in based on RFC"""
     response_value = int(response[0:1])
     for return_code in list_of_values:
         if response_value == return_code:
@@ -10,7 +6,6 @@ def raise_ftp_error_for_values(response, list_of_values):
 
 
 def raise_ftp_failure_for_values(response, list_of_values):
-    """ftp failures passed in based on RFC"""
     response_value = int(response[0:1])
     for return_code in list_of_values:
         if response_value == return_code:
@@ -18,7 +13,6 @@ def raise_ftp_failure_for_values(response, list_of_values):
 
 
 def raise_error_if_not_in_given_values(response, list_of_values):
-    """Expected values passed in based on RFC"""
     response_value = int(response[0:1])
     for return_code in list_of_values:
         if response_value == return_code:
