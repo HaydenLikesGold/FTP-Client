@@ -16,23 +16,17 @@ def user_login_process(socket_file):
 
 
 def user_entry(socket_file):
-    socket_file.write(USER_COMMAND)
-    socket_file.flush()
-    response_x = response.get_response(socket_file)
-    ftp_response_handler.validate_user_and_pass_response(response_x)
-    return int(response_x[0:1])
+    user_response = response.get_response(socket_file, USER_COMMAND)
+    ftp_response_handler.validate_user_and_pass_response(user_response)
+    return int(user_response[0:1])
 
 
 def password_entry(socket_file):
-    socket_file.write(PASSWORD_COMMAND)
-    socket_file.flush()
-    pass_response = response.get_response(socket_file)
+    pass_response = response.get_response(socket_file, PASSWORD_COMMAND)
     ftp_response_handler.validate_user_and_pass_response(pass_response)
     return int(pass_response[0:1])
 
 
 def acct_entry(socket_file):
-    socket_file.write(ACCOUNT_COMMAND)
-    socket_file.flush()
-    acct_response = response.get_response(socket_file)
+    acct_response = response.get_response(socket_file, ACCOUNT_COMMAND)
     ftp_response_handler.validate_acct_response(acct_response)

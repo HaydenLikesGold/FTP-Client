@@ -16,7 +16,10 @@ def response_to_port_tuple(response):
     return (host_name, port_number)
 
 
-def get_response(socket_file):
+def get_response(socket_file, command=None):
+    if command:
+        socket_file.write(command)
+        socket_file.flush()
     """Will wait and recieve a response"""
     while True:
         line = socket_file.readline()

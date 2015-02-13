@@ -22,18 +22,14 @@ def connect_to_new_socket(socket, socket_file):
 
 
 def send_pasv_command(socket_file):
-    socket_file.write(PASV_COMMAND)
-    socket_file.flush()
-    new_port_information = response.get_response(socket_file)
+    new_port_information = response.get_response(socket_file, PASV_COMMAND)
     ftp_response_handler.validate_pasv_and_quit_command(new_port_information)
     return response.response_to_port_tuple(new_port_information)
 
 
 def send_retr_command(socket_file):
-    socket_file.write(RETR_COMMAND)
-    socket_file.flush()
     ftp_response_handler.validate_retr_command(
-        response.get_response(socket_file))
+        response.get_response(socket_file, RETR_COMMAND))
     ftp_response_handler.validate_retr_command(
         response.get_response(socket_file))
 
@@ -44,7 +40,5 @@ def retrieve_data(socket_file, created_file):
 
 
 def close_server_connection(socket_file):
-    socket_file.write(QUIT_COMMAND)
-    socket_file.flush()
     ftp_response_handler.validate_pasv_and_quit_command(
-        response.get_response(socket_file))
+        response.get_response(socket_file, QUIT_COMMAND))
