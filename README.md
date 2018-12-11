@@ -3,7 +3,7 @@
 ftp-client 2.0.0
 Published: 13-February-2015
 
-##Introduction
+## Introduction
 A FTP Python project that follows guidelines from RFC-959. At the start, it was
 a class project, but has expanded to have improved design, clarity, and command-line
 usage.
